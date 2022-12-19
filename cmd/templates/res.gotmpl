@@ -1,0 +1,23 @@
+<h4>Results for {{.Code}}, {{.HumanTerm}}</h4>
+
+<table class="table">
+    <tr>
+        <th>Section</th>
+        <th>Crn (Opens in new tab)</th>
+        <th>Free Space</th>
+        <th>Taken Space</th>
+        <th>Total Space</th>
+    </tr>
+{{range $val := .Courses}}
+   <tr>
+     <td>{{.Name}}</td>
+     <td><a target="_blank" href="https://central.carleton.ca/prod/bwysched.p_display_course?wsea_code=EXT&term_code={{$.Term}}&disp=0&crn={{.Crn}}">{{.Crn}}</a></td>
+    <td>{{.Free}}</td>
+    <td>{{.Taken}}</td>
+    <td>{{.Total}}</td>
+   </tr>
+{{end}}
+
+</table>
+<div>Course Data Last Updated: <em>{{.Updated}}</em></div>
+<div>Course Updates last checked at: <em>{{.Obtained}}</em></div>

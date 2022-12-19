@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+    <title>CUr Course Availability</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        #wrap {
+            min-height: 100%;
+        }
+
+        #main {
+            overflow: auto;
+            padding-bottom: 220px;
+
+        }
+
+        .footer {
+            position: relative;
+            margin-top: -220px;
+            height: 220px;
+            clear: both;
+            padding-top: 16px;
+        }
+    </style>
+</head>
+<html>
+
+<body>
+    <div id="wrap">
+
+
+        <div id="main" class="container clear-top pt-4">
+
+            <form id="form">
+                <div class="form-group">
+                    <h2><a href="//carleton.ca">C U</a>r Course Availability</h3>
+                    <p>A simple utilitity to check the remaining space in courses. </p>
+                    <p><b>This tool does not get live data from Carleton</b><br>See the attached "Course Data Last Updated" timestamp in the response. </p>
+		    <p>Negative free space is (very likely) caused by students overriding to get into an otherwise full course. To check your waitlist position, go to the timetable on Carleton Central, and select 'Detail Schedule' near the bottom.
+                </div>
+                <div class="form-group">
+                    <label for="term">Select Term</label>
+                    <select class="form-control" id="term">
+                         <option value="202230">Fall 2022</option>
+                         <option value="202310">Winter 2023</option>
+                         <option value="202320">Summer 2023</option>
+                         <option value="202330">Fall 2023</option>
+                         <option value="202410">Winter 2024</option>
+                         <option value="202420">Summer 2024</option>
+                         <option value="202430">Fall 2024</option>
+                         <option value="202510">Winter 2025</option>
+                         <option value="202520">Summer 2025</option>
+                         <option value="202530">Fall 2025</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="cname">Course Code</label>
+                    <input id="cname" type="text" class="form-control" placeholder="COMP 1405" />
+                </div>
+                <div class="form-group">
+                    <button id="sub" type="submit" class="btn btn-primary">Check</button>
+
+                    <i id="load" hidden class="fa fa-spinner fa-spin fa-2x"></i>
+                </div>
+
+            </form>
+    <br>
+            <div id="res" class="text-muted"></div>
+        </div>
+    </div>
+
+
+
+    <script type="application/javascript">
+        let term = document.getElementById("term")
+        let courseName = document.getElementById("cname")
+        let spinner = document.getElementById("load")
+        let submitBtn = document.getElementById("sub")
+        let form = document.getElementById("form")
+
+        let resDiv = document.getElementById("res")
+        if (v = localStorage.getItem('term')) {
+            console.log("Restoring term to ", v)
+            term.value = v
+        }
+
+        if (v = localStorage.getItem('course')) {
+            console.log("Restoring course to ", v)
+            courseName.value = v
+        }
+
+        form.addEventListener("submit", function (event) {
+            event.preventDefault()
+            f()
+        });
+
+        term.addEventListener("change", ()=>{
+            mute()
+        })
+        courseName.addEventListener("input", ()=>{
+            mute()
+        })
+
+        function mute(){
+            console.log("Muting")
+            resDiv.className = "text-muted"
+        }
+        async function f() {
+            
+            spinner.hidden = false
+            submitBtn.disabled = true
+            resDiv.innerHTML = ""
+            let t = term.value
+            let c = courseName.value
+            let dp = (c.match(/^\s*([A-Za-z]*)/)[1] || "COMP").toUpperCase()
+            let co = c.match(/(\d*)\s*$/)[1] || 1405
+            localStorage.setItem('course', `${dp} ${co}`);
+            courseName.value = `${dp} ${co}`
+            localStorage.setItem('term', t);
+
+            
+            let g = `/api/availability?dpt=${dp}&code=${co}&term=${t}`
+            let te = await fetch(g)
+
+            resDiv.innerHTML = await te.text()
+            spinner.hidden = true
+            resDiv.className = ""
+            submitBtn.disabled = false
+        }
+    </script>
+</body>
+<footer class="footer text-center text-lg-start bg-light text-muted text-wrap">
+    <section class="">
+        <div class="container p-4">
+            <div class="row">
+                <div class="column col-12">
+                    <p>Note that this is just a wrapper around an API used on <a
+                            href="http://at.eng.carleton.ca/engsched/index.php">here.</a> I cannot update the data shown
+                        by this site.</p>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column col-12">
+                    <p>Your IP, and course data requested for will be logged on the server. Your most recent request will be stored in your browser so it can be loaded automatically next time. </p>
+                </div>
+
+            </div>
+        </div>
+	<div class="row">
+            <div class="column col-12">
+	    	<p> Have any questions, or feedback? Email me at <a href="mailto:avail-feedback@clarkbains.com">avail-feedback@clarkbains.com </a>
+		</p>
+	    </div>
+	</div>
+        <div class="row">
+            <div class="column col-12">
+                <p class="h5">Site Made By <a href="//clarkbains.com">Clark Bains</a> (<a
+                        href="//github.com/clarkbains">Github</a>)
+                </p>
+            </div>
+
+        </div>
+
+        </div>
+    </section>
+
+
+</footer>
+
+</html>

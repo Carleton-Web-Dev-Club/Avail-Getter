@@ -1,0 +1,19 @@
+name: 'build'
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+
+jobs:
+  build:
+    name: 'Build'
+    runs-on: ubuntu-latest
+    steps:
+      - name: "Build:checkout"
+        uses: actions/checkout@v2
+      - name: 'Build:dockerimage'
+        uses: mr-smithers-excellent/docker-build-push@v5
+          with:
+            image: avail-getter
+            registry: ghcr.io
