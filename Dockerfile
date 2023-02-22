@@ -5,12 +5,12 @@ COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 COPY cmd cmd
-RUN go build -o avail ./...
+RUN CGO_ENABLED=0 go build -o avail ./...
 
-FROM alpine
-WORKDIR /app
-RUN apk add gcompat
+FROM gcr.io/distroless/static-debian11
+WORKDIR /
 COPY --from=builder /app/avail avail
 EXPOSE 8080
-CMD ["avail"]
+ENV GIN_MODE=release
+ENTRYPOINT ["/avail"]
 LABEL org.opencontainers.image.source https://github.com/Carleton-Web-Dev-Club/Avail-Getter

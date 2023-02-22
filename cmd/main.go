@@ -178,10 +178,10 @@ func availabilityHandler (context *gin.Context) {
 		fmt.Println(err)
 	}
 
-	err = tmpl.Execute(context.Writer, map[string]any{
+	err = tmpl.Execute(context.Writer, map[string]interface{}{
 		"Courses": rcd,
-		"Updated": cdc.ResponseTimestamp,
-		"Obtained": cdc.DateObtained,
+		"Updated": cdc.ResponseTimestamp.Format(time.RFC822),
+		"Obtained": cdc.DateObtained.Format(time.RFC822),
 		"Term": term,
 		"Code": dpt+code,
 		"HumanTerm": getNameForTerm(term),
