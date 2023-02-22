@@ -13,3 +13,4 @@ RUN apk add gcompat
 COPY --from=builder /app/avail avail
 EXPOSE 8080
 CMD ["avail"]
+LABEL org.opencontainers.image.source https://github.com/Carleton-Web-Dev-Club/Avail-Getter
